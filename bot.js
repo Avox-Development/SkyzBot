@@ -3,7 +3,7 @@ const path = require('path');
 const fs = require('fs');
 const { setDiscordClient } = require('./embedManager.js');
 
-const DISCORD_TOKEN = 'MTM2MzI2ODk2MzcyNjkxNzc1Mw.GUMtks.45IN4hYPLdehirjfDG_hTfV9SAdqhoQt7TgEJ8'; // HEMLIG
+const DISCORD_TOKEN = process.env.TOKEN; // HEMLIG
 const GUILD_ID = '1272276623848112168';
 
 
