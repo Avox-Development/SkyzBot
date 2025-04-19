@@ -1,9 +1,9 @@
 const { Client, GatewayIntentBits, Collection } = require('discord.js');
 const path = require('path');
 const fs = require('fs');
-const { setDiscordClient } = require('./embedManager');
+const { setDiscordClient } = require('./embedManager.js');
 
-const DISCORD_TOKEN = 'MTM2MzI2ODk2MzcyNjkxNzc1Mw.GUMtks.45IN4hYPLdehirjfDG_hTfV9SAdqhoQt7TgEJ8';
+const DISCORD_TOKEN = 'MTM2MzI2ODk2MzcyNjkxNzc1Mw.GUMtks.45IN4hYPLdehirjfDG_hTfV9SAdqhoQt7TgEJ8'; // HEMLIG
 const GUILD_ID = '1272276623848112168';
 
 
@@ -36,17 +36,24 @@ async function startDiscordBot() {
         });
 
         discordClient.on('interactionCreate', async interaction => {
-            if (!interaction.isCommand()) return;
-
-            const command = discordClient.commands.get(interaction.commandName);
-
-            if (command) {
-                try {
-                    await command.execute(interaction);
-                } catch (error) {
-                    console.error(error);
-                    await interaction.reply({ content: 'Ett fel uppstod vid körning av kommandot.', ephemeral: true });
-                }
+            if (interaction.isAutocomplete()) {
+              const command = discordClient.commands.get(interaction.commandName);
+              if (!command || !command.autocomplete) return;
+              try {
+                await command.autocomplete(interaction);
+              } catch (err) {
+                console.error(err);
+              }
+            }
+          
+            if (interaction.isChatInputCommand()) {
+              const command = discordClient.commands.get(interaction.commandName);
+              if (!command || !command.execute) return;
+              try {
+                await command.execute(interaction);
+              } catch (err) {
+                console.error(err);
+              }
             }
         });
 

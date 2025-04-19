@@ -7,9 +7,7 @@ function setDiscordClient(client) {
     discordClient = client;
 }
 
-const CHANNEL_ID = '';
-
-async function sendRefillEmbed(material, by, date, added, left) {
+async function sendRefillEmbed(material, by, date, added) {
     try {
         const channel = await discordClient.channels.fetch("1272288607377428511");
 

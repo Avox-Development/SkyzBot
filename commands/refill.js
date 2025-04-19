@@ -1,5 +1,7 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
-const { sendRefillEmbed } = require('../embedManager');
+const { sendRefillEmbed } = require('../embedManager.js');
+const materials = require('../materials.json');
+const materialNames = Object.keys(materials);
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -12,27 +14,33 @@ module.exports = {
         .setAutocomplete(true)
     )
     .addStringOption(option =>
+        option.setName('date')
+          .setDescription('Datum för påfyllning (ex: 2025-04-19)')
+          .setRequired(true)
+      )
+    .addStringOption(option =>
       option.setName('name')
         .setDescription('Vem som fyllde på materialet')
-        .setRequired(true)
-    )
-    .addStringOption(option =>
-      option.setName('date')
-        .setDescription('Datum för påfyllning (ex: 2025-04-19)')
         .setRequired(true)
     )
     .addStringOption(option =>
       option.setName('added')
         .setDescription('Hur mycket som har lagts till')
         .setRequired(true)
-    )
-    .addStringOption(option =>
-      option.setName('left')
-        .setDescription('Hur mycket som är kvar')
-        .setRequired(true)
     ),
 
-  async execute(interaction) {
+    async autocomplete(interaction) {
+        const focusedValue = interaction.options.getFocused();
+        const filtered = materialNames.filter(name =>
+          name.toLowerCase().includes(focusedValue.toLowerCase())
+        );
+      
+        await interaction.respond(
+          filtered.map(name => ({ name, value: name }))
+        );
+    },
+
+    async execute(interaction) {
     try {
       if (!interaction.member.permissions.has(PermissionFlagsBits.Administrator)) {
         return interaction.reply({ content: 'Du har inte behörighet att använda detta kommando.', ephemeral: true });
@@ -42,9 +50,8 @@ module.exports = {
       const name = interaction.options.getString('name');
       const date = interaction.options.getString('date');
       const added = interaction.options.getString('added');
-      const left = interaction.options.getString('left');
 
-      await sendRefillEmbed(material, name, date, added, left);
+      await sendRefillEmbed(material, name, date, added);
       await interaction.reply({ content: 'Påfyllning registrerad.', ephemeral: true });
     } catch (error) {
       console.error('Error:', error);
