@@ -1,4 +1,5 @@
 const { Client, GatewayIntentBits, Collection } = require('discord.js');
+require('dotenv').config();
 const path = require('path');
 const fs = require('fs');
 const { setDiscordClient } = require('./embedManager.js');
